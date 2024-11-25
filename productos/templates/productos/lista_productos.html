@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+</head>
+<body>
+    <!-- Header -->
+    <header style="background-color: #003366; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd;">
+        <nav>
+            <a href="{% url 'productos:lista_productos' %}" style="margin-right: 15px; text-decoration: none; color: #ffffff;">Lista de Productos</a>
+            <a href="{% url 'productos:inventario' %}" style="margin-right: 15px; text-decoration: none; color: #ffffff;">Agregar Producto</a>
+            <a href="{% url 'productos:ventas' %}" style="margin-right: 15px; text-decoration: none; color: #ffffff;">Ventas</a>
+        </nav>
+        <a href="{% url 'productos:logout' %}" style="text-decoration: none; color: #ff0019;">Cerrar Sesión</a>
+    </header>
+
+    <!-- Contenido -->
+    <h1>Lista de Productos</h1>
+
+    <!-- Formulario de búsqueda y botón para mostrar todo -->
+    <form method="get" style="margin-bottom: 20px;">
+        {% csrf_token %}
+        <input type="text" name="q" placeholder="Buscar producto" value="{{ request.GET.q }}">
+        <button type="submit">Buscar</button>
+        <a href="{% url 'productos:lista_productos' %}" style="text-decoration: none;">
+            <button type="button">Mostrar Todo</button>
+        </a>
+    </form>
+
+    <!-- Mostrar productos -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Descripción</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>${{ producto.precio }}</td>
+                <td>{{ producto.descripcion }}</td>
+                <td>{{ producto.stock }}</td>
+                <td>
+                    <form action="{% url 'productos:incrementar_stock' producto.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">➕</button>
+                    </form>
+                    <form action="{% url 'productos:disminuir_stock' producto.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">➖</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

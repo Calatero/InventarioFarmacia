@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario</title>
+</head>
+<body>
+    <!-- Header -->
+    <header style="background-color: #003366; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd;">
+        <nav>
+            <a href="{% url 'productos:lista_productos' %}" style="margin-right: 15px; text-decoration: none; color: #ffffff;">Lista de Productos</a>
+            <a href="{% url 'productos:inventario' %}" style="margin-right: 15px; text-decoration: none; color: #ffffff;">Agregar Producto</a>
+            <a href="{% url 'productos:ventas' %}" style="margin-right: 15px; text-decoration: none; color: #ffffff;">Ventas</a>
+        </nav>
+        <a href="{% url 'productos:logout' %}" style="text-decoration: none; color: #ff0019;">Cerrar Sesión</a>
+    </header>
+
+    <!-- Contenido -->
+    <h1>Agregar Producto</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <h2>Lista de Productos</h2>
+    <ul>
+        {% for producto in productos %}
+        <li>{{ producto.nombre }} - Stock: {{ producto.stock }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
