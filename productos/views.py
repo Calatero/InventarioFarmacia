@@ -82,7 +82,9 @@ def ventas_view(request):
 def registrar_venta_view(request):
     productos = Producto.objects.all()
     if request.method == "POST":
-        # Procesar la cantidad ingresada por el usuario
+        ventas = []
+        costo_total = 0  # Variable para almacenar el costo total de la venta
+
         for producto in productos:
             cantidad_key = f'cantidad_{producto.id}'
             cantidad = request.POST.get(cantidad_key)
@@ -91,22 +93,25 @@ def registrar_venta_view(request):
                 cantidad = int(cantidad)
 
                 if cantidad > 0:
-                    # Crear una venta por cada producto y cantidad seleccionada
                     if producto.stock >= cantidad:
-                        producto.stock -= cantidad  # Reduce el stock
-                        producto.save()  # Guarda el cambio en el stock
-                        Venta.objects.create(producto=producto, cantidad=cantidad, usuario=request.user)  # Crea la venta
+                        total_producto = producto.precio * cantidad  # Calcular el total del producto
+                        producto.stock -= cantidad
+                        producto.save()
+
+                        venta = Venta.objects.create(
+                            producto=producto,
+                            cantidad=cantidad,
+                            precio_total=total_producto,
+                            usuario=request.user
+                        )
+                        ventas.append(venta)
+                        costo_total += total_producto
                     else:
                         messages.error(request, f"No hay suficiente stock para {producto.nombre}.")
 
-        return redirect('productos:ventas')
-    else:
-        form = VentaForm()
+        return render(request, 'productos/ventas.html', {'ventas': ventas, 'costo_total': costo_total, 'productos': productos})
 
-    # Mostrar las ventas recientes
-    ventas = Venta.objects.all().order_by('-fecha')[:10]  # Las 10 ventas más recientes
-
-    return render(request, 'productos/ventas.html', {'form': form, 'productos': productos, 'ventas': ventas})
+    return render(request, 'productos/ventas.html', {'productos': productos})
 
 
 
@@ -133,3 +138,4 @@ def registrar_venta(request):
     ventas = Venta.objects.all().order_by('-fecha')[:10]  # Las 10 ventas más recientes
 
     return render(request, 'productos/ventas.html', {'form': form, 'productos': productos, 'ventas': ventas})
+

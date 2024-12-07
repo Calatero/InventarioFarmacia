@@ -6,7 +6,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Venta</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Función para actualizar el total acumulado
+            function actualizarCostoTotal() {
+                let costoTotal = 0;
+
+                // Iterar sobre todos los inputs de cantidad
+                inputsCantidad.forEach((input) => {
+                    const cantidad = parseInt(input.value) || 0; // Cantidad seleccionada
+                    const precio = parseFloat(input.dataset.precio); // Precio unitario
+                    costoTotal += cantidad * precio; // Sumar al total acumulado
+                });
+
+                // Actualizar el elemento que muestra el costo total
+                totalAcumulado.textContent = `$${costoTotal.toFixed(2)}`;
+            }
+
+            // Función para actualizar el precio por producto y el costo total
+            function actualizarPrecioYTotal(input) {
+                const cantidad = parseInt(input.value) || 0;
+                const precio = parseFloat(input.dataset.precio);
+                const totalLabel = document.getElementById(`total_${input.dataset.id}`);
+                totalLabel.textContent = `$${(cantidad * precio).toFixed(2)}`;
+                actualizarCostoTotal(); // Llamar para actualizar el costo total acumulado
+            }
+
+            // Seleccionar todos los inputs de cantidad
+            const inputsCantidad = document.querySelectorAll('input[data-precio]');
+            const totalAcumulado = document.getElementById('costo_total'); // Elemento del costo total acumulado
+
+            // Agregar evento a cada input para actualizar valores dinámicamente
+            inputsCantidad.forEach((input) => {
+                input.addEventListener('input', () => actualizarPrecioYTotal(input));
+            });
+        });
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -40,14 +75,30 @@
             
             <ul>
                 {% for producto in productos %}
-                    <li>
+                    <li style="margin-bottom: 10px;">
                         <label>{{ producto.nombre }} - ${{ producto.precio }} | Stock: {{ producto.stock }}</label>
                         
                         <!-- Campo para ingresar la cantidad -->
-                        <input type="number" name="cantidad_{{ producto.id }}" min="0" max="{{ producto.stock }}" value="0" />
+                        <input 
+                            type="number" 
+                            name="cantidad_{{ producto.id }}" 
+                            min="0" 
+                            max="{{ producto.stock }}" 
+                            value="0" 
+                            data-id="{{ producto.id }}" 
+                            data-precio="{{ producto.precio }}" 
+                        />
+                        
+                        <!-- Etiqueta para mostrar el total por producto -->
+                        <span id="total_{{ producto.id }}">$0.00</span>
                     </li>
                 {% endfor %}
             </ul>
+
+            <!-- Mostrar el costo total acumulado -->
+            <div style="margin-top: 20px; font-weight: bold; font-size: 18px;">
+                Costo Total Acumulado: <span id="costo_total">$0.00</span>
+            </div>
             
             <button type="submit">Registrar Venta</button>
         </form>
@@ -55,12 +106,22 @@
         <br>
 
         <!-- Muestra el listado de ventas recientes -->
-        <h3>Ventas Recientes</h3>
-        <ul>
-            {% for venta in ventas %}
-            <li>{{ venta.producto.nombre }} - {{ venta.cantidad }} unidades - {{ venta.fecha }}</li>
-            {% endfor %}
-        </ul>
+        <h2>Ticket de Venta</h2>
+            {% if ventas %}
+                <ul>
+                    {% for venta in ventas %}
+                    <li>
+                        {{ venta.producto.nombre }} - {{ venta.cantidad }} unidades - 
+                        ${{ venta.precio_total }} ({{ venta.producto.precio }} c/u)
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div style="margin-top: 20px; font-weight: bold; font-size: 18px;">
+                    Costo Final: ${{ costo_total }}
+                </div>
+            {% else %}
+                <p>No hay ventas registradas actualmente.</p>
+            {% endif %}
     </main>
 
     <!-- Footer -->
@@ -69,4 +130,3 @@
     </footer>
 </body>
 </html>
-
