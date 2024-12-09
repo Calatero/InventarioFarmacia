@@ -1,12 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        form input { padding: 5px; margin-right: 10px; }
+        button { padding: 5px 10px; }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #003366;
+            color: white;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
     <header style="background-color: #003366; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd;">
         <nav>
             <a href="{% url 'productos:lista_productos' %}" style="margin-right: 15px; text-decoration: none; color: #ffffff;">Lista de Productos</a>
@@ -15,21 +28,16 @@
         </nav>
         <a href="{% url 'productos:logout' %}" style="text-decoration: none; color: #ff0019;">Cerrar Sesión</a>
     </header>
+    </header>
 
-    <!-- Contenido -->
     <h1>Lista de Productos</h1>
-
-    <!-- Formulario de búsqueda y botón para mostrar todo -->
-    <form method="get" style="margin-bottom: 20px;">
+    <form method="get">
         {% csrf_token %}
         <input type="text" name="q" placeholder="Buscar producto" value="{{ request.GET.q }}">
         <button type="submit">Buscar</button>
-        <a href="{% url 'productos:lista_productos' %}" style="text-decoration: none;">
-            <button type="button">Mostrar Todo</button>
-        </a>
+        <a href="{% url 'productos:lista_productos' %}"><button type="button">Mostrar Todo</button></a>
     </form>
 
-    <!-- Mostrar productos -->
     <table>
         <thead>
             <tr>
@@ -61,5 +69,8 @@
             {% endfor %}
         </tbody>
     </table>
+    <footer>
+        <p>&copy; 2024 Inventario Farmacia</p>
+    </footer>
 </body>
 </html>

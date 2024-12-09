@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -81,10 +82,10 @@ def ventas_view(request):
 @login_required
 def registrar_venta_view(request):
     productos = Producto.objects.all()
-    if request.method == "POST":
-        ventas = []
-        costo_total = 0  # Variable para almacenar el costo total de la venta
+    ventas = []  # Lista para almacenar las ventas realizadas
+    costo_total = 0  # Inicializar el costo total de la venta
 
+    if request.method == "POST":
         for producto in productos:
             cantidad_key = f'cantidad_{producto.id}'
             cantidad = request.POST.get(cantidad_key)
@@ -109,9 +110,15 @@ def registrar_venta_view(request):
                     else:
                         messages.error(request, f"No hay suficiente stock para {producto.nombre}.")
 
-        return render(request, 'productos/ventas.html', {'ventas': ventas, 'costo_total': costo_total, 'productos': productos})
+        return render(request, 'productos/ventas.html', {
+            'productos': productos,
+            'ventas': ventas,
+            'costo_total': costo_total
+        })
 
-    return render(request, 'productos/ventas.html', {'productos': productos})
+    # Mostrar solo la lista de productos en el formulario inicial
+    return render(request, 'productos/ventas.html', {'productos': productos, 'ventas': ventas, 'costo_total': costo_total})
+
 
 
 

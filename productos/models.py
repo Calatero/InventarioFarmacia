@@ -20,5 +20,4 @@ class Venta(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.producto.nombre} - {self.cantidad} unidades - ${self.precio_total}"
-
+        return f"{self.producto.nombre} - {self.cantidad} unidades - ${self.precio_total:.2f}"
